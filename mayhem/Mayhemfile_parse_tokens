@@ -1,0 +1,13 @@
+project: savantenvs/jaq
+target: parse_tokens
+# Upstream jaq-core/fuzz/fuzz_targets/parse_tokens.rs: the input is `Vec<jaq_core::load::lex::
+# Token<&str>>`, decoded via `#[derive(Arbitrary)]` from the fuzzer's raw bytes -- a structured
+# encoding, not jq source text. There is no plain-text/format-valid seed corresponding to this
+# encoding (a real seed would have to be handcrafted against Arbitrary's exact byte layout, which
+# breaks the moment the derived impl changes), so per docs/seed-corpus.md this target ships no
+# local seeds -- only the accumulating server corpus.
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+cmds:
+  - cmd: /mayhem/parse_tokens
+    libfuzzer: true

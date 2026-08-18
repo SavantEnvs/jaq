@@ -1,0 +1,15 @@
+project: savantenvs/jaq
+target: load_and_compile
+# Upstream jaq-core/fuzz/fuzz_targets/load_and_compile.rs: `fuzz_target!(|code: &str| ...)` uses
+# libfuzzer-sys's single-argument Arbitrary::arbitrary_take_rest path, which for &str is simply
+# "the whole input, validated as UTF-8" -- i.e. the fuzzer's raw bytes ARE the jq filter source
+# text, unencoded. So real jq filter expressions are genuine, format-valid seeds here. Harvested
+# from jaq-core/tests/*.rs (real filter strings used in the project's own KAT-style tests),
+# avoiding '"' and the substring "main" (the harness itself skips those inputs early -- see the
+# harness source -- so seeds containing them would be wasted).
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/load_and_compile/testsuite
+cmds:
+  - cmd: /mayhem/load_and_compile
+    libfuzzer: true

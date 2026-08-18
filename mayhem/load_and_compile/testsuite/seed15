@@ -1,0 +1,1 @@
+def upto($x): .[$x], (if $x > 0 then upto($x-1) else empty end); upto(3)

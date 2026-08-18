@@ -1,0 +1,32 @@
+[package]
+name = "jaq-mayhem-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+# This crate is deliberately its OWN workspace root (empty [workspace] below), even though it
+# lives inside the jaq repo tree. The jaq root Cargo.toml (upstream file, never edited) declares
+# an explicit `members = [...]` list that does not include mayhem/fuzz; a nested Cargo.toml
+# without its own [workspace] table would make cargo walk up, find that root workspace, and fail
+# because this package isn't a declared member. An empty [workspace] table stops the walk here,
+# so this crate — and the Cargo.lock it commits — stays fully additive.
+[workspace]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+jaq-core = { path = "../../jaq-core" }
+jaq-std  = { path = "../../jaq-std" }
+jaq-json = { path = "../../jaq-json" }
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "execute"
+path = "fuzz_targets/execute.rs"
+test = false
+doc = false

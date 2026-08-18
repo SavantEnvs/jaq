@@ -1,0 +1,17 @@
+project: savantenvs/jaq
+target: execute
+# ADDITIVE target (mayhem/fuzz/fuzz_targets/execute.rs, not part of upstream's jaq-core/fuzz/
+# crate): the raw fuzzer bytes are parsed as a JSON *document* (jaq_json::read::parse_single) and
+# run end-to-end -- parse the filter, compile it, EXECUTE it -- through a small fixed library of
+# standard jq filters (`..`, `keys?`, `add?`, `tostring`, `length`, `paths?`). This is the one
+# target that actually drives jaq's interpreter against a variety of real JSON shapes; the three
+# upstream targets mostly stop at parse/compile or run a fixed filter over a bare string. See the
+# harness source for the boundedness argument (filter TEXT is fixed, never fuzzed, so there is no
+# way to construct an unbounded generator like `repeat(.)`; every output stream is additionally
+# capped at 256 items).
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/execute/testsuite
+cmds:
+  - cmd: /mayhem/execute
+    libfuzzer: true
